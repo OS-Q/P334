@@ -1,6 +1,10 @@
 language: python
 python:
-  - "3.7"
+  - "3.9"
+os:
+  - linux
+git:
+  depth: 1
 
 env:
   - PLATFORMIO_PROJECT_DIR=examples/mbed-rtos-blink-baremetal
@@ -11,11 +15,11 @@ env:
 
 
 install:
-  - pip install -U https://github.com/OS-Q/S03/archive/master.zip
-  - platformio platform install file://.
+  - pip install -U https://github.com/platformio/platformio/archive/develop.zip
+  - pio platform install file://.
 
 script:
-  - platformio run -s -d $PLATFORMIO_PROJECT_DIR
+  - pio run -s -d $PLATFORMIO_PROJECT_DIR
 
 notifications:
   email: false
