@@ -1,6 +1,10 @@
 ﻿# [P32](https://github.com/OS-Q/P32)
 
-[![Build Status](https://github.com/OS-Q/P32/workflows/PIO/badge.svg)](https://github.com/OS-Q/P32/actions/workflows/PIO.yml)
+[![sites](http://182.61.61.133/link/resources/OSQ.png)](http://www.OS-Q.com)
+
+[![Build Status](https://github.com/OS-Q/P32/workflows/CI/badge.svg)](https://github.com/OS-Q/P32/actions/workflows/CI.yml)
+[![Build Status](https://github.com/OS-Q/P32/workflows/CD/badge.svg)](https://github.com/OS-Q/P32/actions/workflows/CD.yml)
+[![Build Status](https://github.com/OS-Q/P32/workflows/nightly/badge.svg)](https://github.com/OS-Q/P32/actions/workflows/nightly.yml)
 [![Build Status](https://circleci.com/gh/OS-Q/P32.svg?style=svg)](https://circleci.com/gh/OS-Q/P32)
 [![Build Status](https://travis-ci.com/OS-Q/P32.svg?branch=master)](https://travis-ci.com/OS-Q/P32)
 [![Build Status](https://cloud.drone.io/api/badges/OS-Q/P32/status.svg)](https://cloud.drone.io/OS-Q/P32)

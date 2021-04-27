@@ -1,0 +1,153 @@
+name: nightly
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+# on:
+#   push:
+#     branches:
+#       - master
+#       - main
+
+env:
+  UPLOAD_BUILD: false
+
+jobs:
+  QIO:
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - "zephyr-blink"
+          - "mbed-rtos-cellular"
+          - "mbed-rtos-ethernet-tls"
+          - "zephyr-synchronization"
+          - "mbed-rtos-blink-baremetal"
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        package:
+          - "all"
+          - "qio"
+          - "pio"
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+          fetch-depth: 1
+
+      - name: Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install all
+        if: matrix.package == 'all'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
+          pio platform install https://github.com/OS-Q/P32/releases/latest/download/package.zip
+
+      - name: Install qio
+        if: matrix.package == 'qio'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
+          qio platform install https://github.com/OS-Q/P32/releases/latest/download/qio.zip
+
+      - name: Install pio
+        if: matrix.package == 'pio'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
+          qio platform install https://github.com/OS-Q/P32/releases/latest/download/pio.zip
+
+      - name: Build
+        if: success()
+        working-directory: examples
+        run: |
+          pio run -d ${{ matrix.example }}
+
+      - name: Upload
+        if: env.UPLOAD_BUILD
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_${{ matrix.example }}_${{ matrix.package }}
+          path: examples/${{ matrix.example }}/.pio/build/
+
+  QIO_fail:
+    needs:
+      - QIO
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: notification
+        uses: Qful/mqtt-action@master
+        with:
+          protocol: mqtt
+          host: ${{secrets.MQTT_SERVER}}
+          port: 1883
+          username: ${{secrets.MQTT_USERNAME}}
+          password: ${{secrets.MQTT_PASSWORD}}
+          topic: ${{github.repository}}/${{github.workflow}}
+          message: "QIO build failure"
+
+  PIO:
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - "zephyr-blink"
+          - "mbed-rtos-cellular"
+          - "mbed-rtos-ethernet-tls"
+          - "zephyr-synchronization"
+          - "mbed-rtos-blink-baremetal"
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+
+      - name: Install platformio
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U https://github.com/platformio/platformio/archive/develop.zip
+          pio platform install https://github.com/OS-Q/P32/releases/latest/download/package.zip
+
+      - name: Build
+        if: success()
+        working-directory: examples
+        run: |
+          pio run -d ${{ matrix.example }}
+
+      - name: Upload
+        if: env.UPLOAD_BUILD
+        uses: actions/upload-artifact@v2
+        with:
+          name: pio_build_${{ matrix.example }}
+          path: examples/${{ matrix.example }}/.pio/build/
+
+  PIO_fail:
+    needs:
+      - PIO
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: notification
+        uses: Qful/mqtt-action@master
+        with:
+          protocol: mqtt
+          host: ${{secrets.MQTT_SERVER}}
+          port: 1883
+          username: ${{secrets.MQTT_USERNAME}}
+          password: ${{secrets.MQTT_PASSWORD}}
+          topic: ${{github.repository}}/${{github.workflow}}
+          message: "PIO build failure"
