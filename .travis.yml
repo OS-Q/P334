@@ -10,12 +10,12 @@ env:
   - PLATFORMIO_PROJECT_DIR=examples/mbed-rtos-blink-baremetal
   - PLATFORMIO_PROJECT_DIR=examples/mbed-rtos-cellular
   - PLATFORMIO_PROJECT_DIR=examples/mbed-rtos-ethernet-tls
-  - PLATFORMIO_PROJECT_DIR=examples/zephyr-blink
-  - PLATFORMIO_PROJECT_DIR=examples/zephyr-synchronization
+  # - PLATFORMIO_PROJECT_DIR=examples/zephyr-blink
+  # - PLATFORMIO_PROJECT_DIR=examples/zephyr-synchronization
 
 
 install:
-  - pip install -U https://github.com/platformio/platformio/archive/develop.zip
+  - pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
   - pio platform install file://.
 
 script:

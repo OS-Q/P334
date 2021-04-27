@@ -5,16 +5,20 @@ environment:
     - PLATFORMIO_PROJECT_DIR: "examples/mbed-rtos-blink-baremetal"
     - PLATFORMIO_PROJECT_DIR: "examples/mbed-rtos-cellular"
     - PLATFORMIO_PROJECT_DIR: "examples/mbed-rtos-ethernet-tls"
-    - PLATFORMIO_PROJECT_DIR: "examples/zephyr-blink"
-    - PLATFORMIO_PROJECT_DIR: "examples/zephyr-synchronization"
+    # - PLATFORMIO_PROJECT_DIR: "examples/zephyr-blink"
+    # - PLATFORMIO_PROJECT_DIR: "examples/zephyr-synchronization"
 
+clone_depth: 1
 platform:
   - x64
 install:
   - cmd: git submodule update --init --recursive
   - cmd: SET PATH=C:\Python37\Scripts;%PATH%
-  - cmd: pip3 install -U https://github.com/platformio/platformio/archive/develop.zip
+  - cmd: pip3 install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
   - cmd: pio platform install file://.
 
+build_script:
+  - cmd: pio run -d %PLATFORMIO_PROJECT_DIR%
+
 test_script:
-  - cmd: pio run -s -d %PLATFORMIO_PROJECT_DIR%
+  - cmd: qio run -d %PLATFORMIO_PROJECT_DIR%

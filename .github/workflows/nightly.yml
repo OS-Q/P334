@@ -18,10 +18,10 @@ jobs:
       fail-fast: false
       matrix:
         example:
-          - "zephyr-blink"
+          # - "zephyr-blink"
+          # - "zephyr-synchronization"
           - "mbed-rtos-cellular"
           - "mbed-rtos-ethernet-tls"
-          - "zephyr-synchronization"
           - "mbed-rtos-blink-baremetal"
         os: [ubuntu-latest, windows-latest, macos-latest]
         package:
@@ -97,10 +97,10 @@ jobs:
       fail-fast: false
       matrix:
         example:
-          - "zephyr-blink"
+          # - "zephyr-blink"
+          # - "zephyr-synchronization"
           - "mbed-rtos-cellular"
           - "mbed-rtos-ethernet-tls"
-          - "zephyr-synchronization"
           - "mbed-rtos-blink-baremetal"
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
