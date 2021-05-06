@@ -2,7 +2,19 @@ kind: pipeline
 name: OSQ
 
 steps:
-- name: PIOb
+- name: QIO
+  image: python:3
+  commands:
+  - apt update
+  - apt install -y git
+  - git submodule update --init --recursive
+  - pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
+  - pio platform install file://.
+  - pio run -d examples/mbed-rtos-cellular
+  - pio run -d examples/mbed-rtos-ethernet-tls
+  - pio run -d examples/mbed-rtos-blink-baremetal
+
+- name: PIO
   image: python:3
   commands:
   - apt update
@@ -10,8 +22,6 @@ steps:
   - git submodule update --init --recursive
   - pip install -U https://github.com/platformio/platformio/archive/develop.zip
   - pio platform install file://.
-  # - pio run -d examples/zephyr-blink
-  # - pio run -d examples/zephyr-synchronization
   - pio run -d examples/mbed-rtos-cellular
   - pio run -d examples/mbed-rtos-ethernet-tls
   - pio run -d examples/mbed-rtos-blink-baremetal

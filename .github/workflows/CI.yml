@@ -30,7 +30,7 @@ jobs:
       uses: Qful/check-action@master
       with:
         github_token: ${{ secrets.OSQ_REPO_TOKEN }}
-        enable: all #performance,portability,warning
+        enable: all
         inconclusive: disable
         inline_suppression: disable
         force_language: c
@@ -52,7 +52,7 @@ jobs:
         name: code_check_report
         path: codecheck.txt
 
-  QIO:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -62,9 +62,8 @@ jobs:
           - "mbed-rtos-cellular"
           - "mbed-rtos-ethernet-tls"
           - "mbed-rtos-blink-baremetal"
-
+        package: ["pio","qio"]
         os: [ubuntu-latest, windows-latest, macos-latest]
-
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -77,100 +76,20 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install QIO
+      - name: Install qio
+        if: matrix.package == 'qio'
         run: |
-          python -m pip install --upgrade pip
           pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
-          pio platform install file://.
+          qio platform install file://.
 
-      - name: Build examples
-        id: build
-        if: success()
-        working-directory: examples
+      - name: Install pio
+        if: matrix.package == 'pio'
         run: |
-          pio run -d ${{ matrix.example }}
-
-      - name: Upload
-        if: env.UPLOAD_BUILD
-        uses: actions/upload-artifact@v2
-        with:
-          name: qio_ci_build_${{ matrix.example }}_${{ matrix.os }}
-          path: examples/${{ matrix.example }}/.pio/build/
-
-  QIO_fail:
-    needs:
-      - QIO
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: notification
-        uses: Qful/mqtt-action@master
-        with:
-          protocol: mqtt
-          host: ${{secrets.MQTT_SERVER}}
-          port: 1883
-          username: ${{secrets.MQTT_USERNAME}}
-          password: ${{secrets.MQTT_PASSWORD}}
-          topic: ${{github.repository}}/${{github.workflow}}
-          message: "QIO CI failure"
-
-  PIO:
-    strategy:
-      fail-fast: false
-      matrix:
-        example:
-          # - "zephyr-blink"
-          # - "zephyr-synchronization"
-          - "mbed-rtos-cellular"
-          - "mbed-rtos-ethernet-tls"
-          - "mbed-rtos-blink-baremetal"
-
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: "recursive"
-          fetch-depth: 1
-
-      - name: Set up Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.9
-
-      - name: Install PIO
-        run: |
-          python -m pip install --upgrade pip
           pip install -U https://github.com/platformio/platformio/archive/develop.zip
           pio platform install file://.
 
       - name: Build examples
-        id: build
-        if: success()
         working-directory: examples
         run: |
           pio run -d ${{ matrix.example }}
 
-      - name: Upload
-        if: env.UPLOAD_BUILD
-        uses: actions/upload-artifact@v2
-        with:
-          name: pio_ci_build_${{ matrix.example }}_${{ matrix.os }}
-          path: examples/${{ matrix.example }}/.pio/build/
-
-  PIO_fail:
-    needs:
-      - PIO
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: notification
-        uses: Qful/mqtt-action@master
-        with:
-          protocol: mqtt
-          host: ${{secrets.MQTT_SERVER}}
-          port: 1883
-          username: ${{secrets.MQTT_USERNAME}}
-          password: ${{secrets.MQTT_PASSWORD}}
-          topic: ${{github.repository}}/${{github.workflow}}
-          message: "PIO CI failure"
