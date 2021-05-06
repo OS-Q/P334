@@ -1,8 +1,8 @@
 kind: pipeline
-name: default
+name: OSQ
 
 steps:
-- name: OSQ
+- name: PIOb
   image: python:3
   commands:
   - apt update
@@ -10,8 +10,8 @@ steps:
   - git submodule update --init --recursive
   - pip install -U https://github.com/platformio/platformio/archive/develop.zip
   - pio platform install file://.
-  - pio run -d examples/zephyr-blink
+  # - pio run -d examples/zephyr-blink
+  # - pio run -d examples/zephyr-synchronization
   - pio run -d examples/mbed-rtos-cellular
   - pio run -d examples/mbed-rtos-ethernet-tls
-  - pio run -d examples/zephyr-synchronization
   - pio run -d examples/mbed-rtos-blink-baremetal
