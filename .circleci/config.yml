@@ -18,10 +18,10 @@ jobs:
       - run:
           name: "Build"
           command: |
-            pio run -d examples/zephyr-blink
+            # pio run -d examples/zephyr-blink
+            # pio run -d examples/zephyr-synchronization
             pio run -d examples/mbed-rtos-cellular
             pio run -d examples/mbed-rtos-ethernet-tls
-            pio run -d examples/zephyr-synchronization
             pio run -d examples/mbed-rtos-blink-baremetal
 
 workflows:
