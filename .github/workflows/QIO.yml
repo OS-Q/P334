@@ -1,20 +1,16 @@
-name: CI
+name: QIO
 
 on:
   push:
     branches:
-      - master
-      - main
+      - qio
     paths:
       - 'boards/**'
-      - 'builder/**'
       - 'extend/**'
       - 'examples/**'
-      - '**.json'
-      - '**.py'
+      - 'link.json'
+      - 'link.py'
 
-env:
-  UPLOAD_BUILD: true
 
 jobs:
   CodeCheck:
@@ -62,7 +58,6 @@ jobs:
           - "mbed-rtos-cellular"
           - "mbed-rtos-ethernet-tls"
           - "mbed-rtos-blink-baremetal"
-        package: ["pio","qio"]
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -76,16 +71,10 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install qio
-        if: matrix.package == 'qio'
+      - name: Install
         run: |
+          python -m pip install --upgrade pip
           pip install -U https://github.com/OS-Q/M03/releases/latest/download/qio.zip
-          qio platform install file://.
-
-      - name: Install pio
-        if: matrix.package == 'pio'
-        run: |
-          pip install -U https://github.com/platformio/platformio/archive/develop.zip
           pio platform install file://.
 
       - name: Build examples
