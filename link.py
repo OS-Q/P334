@@ -5,7 +5,7 @@ from platformio.managers.platform import PlatformBase
 from platformio.util import get_systype
 
 
-class P33Platform(PlatformBase):
+class P334Platform(PlatformBase):
 
     def is_embedded(self):
         return True
